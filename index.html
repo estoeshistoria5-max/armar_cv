@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de CV Profesional - Personalizable</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-body: #f4f5f7;
+            --navy-dark: #1a252f;
+            --text-dark: #333333;
+            --text-gray: #666666;
+            --accent: #1a252f;
+            --font-main: 'Inter', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-body);
+            color: var(--text-dark);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .top-customizer-bar {
+            background-color: #ffffff;
+            border-bottom: 1px solid #dcdcdc;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            z-index: 20;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+
+        .customizer-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .customizer-group input[type="color"] {
+            border: none;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            background: none;
+        }
+
+        .color-helper-link {
+            font-size: 12px;
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        .color-helper-link:hover {
+            text-decoration: underline;
+        }
+
+        .app-container {
+            display: flex;
+            width: 100%;
+            height: calc(100vh - 55px);
+        }
+
+        .form-section {
+            width: 42%;
+            padding: 25px;
+            background: #ffffff;
+            border-right: 1px solid #e0e0e0;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+
+        .preview-section {
+            width: 58%;
+            padding: 30px;
+            background: #e8eaed;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 18px;
+            color: var(--accent);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #555;
+            cursor: pointer;
+        }
+
+        .form-group input[type="text"], 
+        .form-group input[type="email"], 
+        .form-group textarea {
+            width: 100%;
+            padding: 9px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: var(--font-main);
+            font-size: 13px;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input[type="file"] {
+            width: 100%;
+            padding: 6px 0;
+            font-size: 12px;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        .section-title {
+            font-size: 15px;
+            color: var(--accent);
+            margin: 25px 0 12px;
+            padding-bottom: 4px;
+            border-bottom: 2px solid var(--accent);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+        }
+
+        .btn-download {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 auto 15px auto;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-download:hover {
+            opacity: 0.9;
+        }
+
+        .btn-add {
+            background-color: transparent;
+            color: var(--accent);
+            border: 2px dashed var(--accent);
+            padding: 10px;
+            width: 100%;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            transition: 0.2s;
+        }
+        
+        .btn-add:hover {
+            background-color: #f4f5f7;
+        }
+
+        .btn-remove {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 3px 6px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        .cv-document {
+            width: 210mm;
+            min-height: 295mm;
+            height: auto;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: relative;
+            text-align: left;
+        }
+
+        .cv-left {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 32%;
+            background-color: var(--navy-dark);
+            color: #ffffff;
+            padding: 20mm 12mm;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+        }
+        
+        .cv-left-content {
+            width: 100%;
+        }
+
+        .cv-photo-container {
+            width: 32mm;
+            height: 32mm;
+            margin-bottom: 20px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            display: block;
+            background-color: #2c3e50;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            position: relative;
+        }
+
+        .cv-photo-container:hover {
+            opacity: 0.8;
+        }
+        
+        .cv-photo-container::after {
+            content: '\f304';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 16px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+
+        .cv-photo-container:hover::after {
+            opacity: 1;
+        }
+
+        .cv-photo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center; 
+        }
+
+        .cv-left .block-title {
+            font-size: 11pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            margin-top: 22px;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 4px;
+            width: 100%;
+            page-break-after: avoid;
+            break-after: avoid;
+        }
+        
+        .cv-left-content > .block-title:first-child {
+            margin-top: 0;
+        }
+
+        .contact-item {
+            font-size: 8.5pt;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            line-height: 1.3;
+            word-break: break-word;
+        }
+
+        .contact-item i {
+            width: 14px;
+            text-align: center;
+            color: #aeb6bf;
+        }
+
+        .sidebar-block-list {
+            font-size: 8.5pt;
+            padding-left: 12px;
+            line-height: 1.4;
+        }
+
+        .sidebar-block-list div {
+            margin-bottom: 6px;
+            color: #ecf0f1;
+            word-break: break-word;
+        }
+
+        .list-item {
+            font-size: 8.5pt;
+            margin-bottom: 12px; 
+            line-height: 1.35;    
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .list-item-title {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .list-item-desc {
+            color: #b0b8c1;
+            font-size: 8pt;
+        }
+
+        .cv-right {
+            width: 68%;
+            margin-left: 32%;
+            padding: 20mm 15mm;
+            background-color: #ffffff;
+            box-sizing: border-box;
+            min-height: 297mm;
+        }
+
+        .cv-name {
+            font-size: 22pt;
+            font-weight: 700;
+            color: var(--text-dark);
+            line-height: 1.1;
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+
+        .cv-title {
+            font-size: 13pt;
+            font-weight: 500;
+            color: var(--text-gray);
+            margin-bottom: 20px;
+        }
+
+        .cv-profile {
+            font-size: 9.5pt;
+            line-height: 1.4;
+            color: var(--text-dark);
+            margin-bottom: 25px;
+            text-align: justify;
+        }
+
+        .cv-section-title {
+            font-size: 12pt;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--accent);
+            padding-bottom: 3px;
+            page-break-after: avoid;
+            break-after: avoid;
+        }
+
+        .cv-experience {
+            margin-bottom: 16px;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .cv-job-title {
+            font-size: 10.5pt;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .cv-company-date {
+            font-size: 8.5pt;
+            color: var(--text-gray);
+            font-style: italic;
+            margin-bottom: 6px;
+            margin-top: 2px;
+        }
+
+        .cv-tasks {
+            font-size: 9pt;
+            line-height: 1.3;
+            color: var(--text-dark);
+            padding-left: 14px;
+        }
+
+        .cv-tasks li {
+            margin-bottom: 3px;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+
+        .img-cropper-container {
+            max-height: 350px;
+            margin-bottom: 15px;
+            background: #f0f0f0;
+        }
+
+        .img-cropper-container img {
+            max-width: 100%;
+            display: block;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .btn-modal {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-cancel {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-cancel:hover { background-color: #ccc; }
+
+        .btn-apply {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .btn-apply:hover { background-color: #219653; }
+
+        .cropper-view-box,
+        .cropper-face {
+            border-radius: 50%;
+        }
+
+        #status-message {
+            font-size: 12px;
+            margin-bottom: 10px;
+            font-weight: 600;
+            min-height: 16px;
+        }
+
+        @media print {
+            body, .app-container { display: block; background: white; height: auto; overflow: visible; }
+            .top-customizer-bar, .form-section, .btn-download, #status-message { display: none !important; }
+            .preview-section { width: 100%; padding: 0; background: white; overflow: visible; }
+            .cv-document { box-shadow: none; width: 100%; margin: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-customizer-bar">
+    <div class="customizer-group">
+        <label for="picker_sidebar">Color Barra Lateral:</label>
+        <input type="color" id="picker_sidebar" value="#1a252f" onchange="updateColors()">
+    </div>
+    <div class="customizer-group">
+        <label for="picker_accent">Color de Acento / Títulos:</label>
+        <input type="color" id="picker_accent" value="#1a252f" onchange="updateColors()">
+    </div>
+    <div class="customizer-group">
+        <a href="https://htmlcolorcodes.com/" target="_blank" class="color-helper-link"><i class="fas fa-palette"></i> Copia el color de aquí</a>
+    </div>
+</div>
+
+<div class="modal-overlay" id="cropModal">
+    <div class="modal-content">
+        <div class="modal-header">Acomoda y centra tu foto</div>
+        <div class="img-cropper-container">
+            <img id="imageToCrop" src="https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png" crossorigin="anonymous" alt="Imagen a recortar">
+        </div>
+        <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Arrastra para mover la imagen o usa la rueda del mouse para hacer zoom.</p>
+        <div class="modal-buttons">
+            <button class="btn-modal btn-cancel" onclick="cancelCrop()">Cancelar</button>
+            <button class="btn-modal btn-apply" onclick="applyCrop()">Aplicar Foto</button>
+        </div>
+    </div>
+</div>
+
+<div class="app-container">
+    <div class="form-section">
+        <h1>Datos de tu CV</h1>
+        
+        <div class="section-title">Encabezado principal</div>
+        <div class="form-group">
+            <label for="in_photo">Foto de perfil (Opcional)</label>
+            <input type="file" id="in_photo" accept="image/*" onchange="loadPhoto(event)">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 5px;">
+                <small style="color: #666; font-size: 11px;">Haz clic en la foto para reajustarla.</small>
+                <button type="button" class="btn-remove" onclick="removePhoto()">Quitar foto</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="in_name">Nombre y apellido completo</label>
+            <input type="text" id="in_name" value="Homer Jay Simpson" onkeyup="updateCV()">
+        </div>
+        <div class="form-group">
+            <label for="in_title">Puesto objetivo / Título profesional</label>
+            <input type="text" id="in_title" value="Inspector de Seguridad Nuclear" onkeyup="updateCV()">
+        </div>
+        <div class="form-group">
+            <label for="in_phone">Teléfono / WhatsApp</label>
+            <input type="text" id="in_phone" value="+1 (939) 555-0113" onkeyup="updateCV()">
+        </div>
+        <div class="form-group">
+            <label for="in_email">Correo electrónico</label>
+            <input type="email" id="in_email" value="chunkylover53@aol.com" onkeyup="updateCV()">
+        </div>
+        <div class="form-group">
+            <label for="in_location">Ubicación</label>
+            <input type="text" id="in_location" value="742 Evergreen Terrace, Springfield, EEUU" onkeyup="updateCV()">
+        </div>
+        <div class="form-group">
+            <label for="in_dob">Fecha de Nacimiento (DD/MM/AAAA)</label>
+            <input type="text" id="in_dob" value="12/05/1956" onkeyup="updateCV()" placeholder="Ej: 15/04/1996">
+            <small style="color: #666; font-size: 11px;">Cálculo automático de edad incorporado.</small>
+        </div>
+
+        <div class="section-title">Perfil profesional</div>
+        <div class="form-group">
+            <label for="in_profile">Resumen inicial (3-5 líneas)</label>
+            <textarea id="in_profile" onkeyup="updateCV()">Profesional con amplia trayectoria en el Sector 7G de la Planta de Energía Nuclear de Springfield. Reconocido internacionalmente por salvar la ciudad de múltiples fusiones nucleares (algunas causadas por mí). Capacidad excepcional para mantener la calma (y tomar siestas) bajo extrema presión. Comprometido con la seguridad y el abastecimiento continuo de rosquillas glaseadas.</textarea>
+        </div>
+
+        <div id="experiences-form-container">
+            <div class="experience-form-block" id="form_exp1">
+                <div class="section-title">Experiencia laboral 1 (Más reciente)</div>
+                <div class="form-group">
+                    <label>Cargo / Puesto</label>
+                    <input type="text" id="in_exp1_title" value="Inspector de Seguridad - Sector 7G" onkeyup="updateCV()">
+                </div>
+                <div class="form-group">
+                    <label>Empresa y Fechas</label>
+                    <input type="text" id="in_exp1_meta" value="Planta de Energía Nuclear de Springfield | Dic 1989 - Actualidad" onkeyup="updateCV()">
+                </div>
+                <div class="form-group">
+                    <label>Tareas y Logros (Separar por renglones)</label>
+                    <textarea id="in_exp1_tasks" onkeyup="updateCV()">Supervisión exhaustiva de las alarmas del panel central mientras consumo rosquillas.
+Prevención de desastres nucleares mediante el avanzado método de "de tin marín de do pingüé".
+Ganador del codiciado premio "Empleado del Mes" (una vez, al parecer por un error administrativo).
+Reorganización estratégica de la sala de descanso para acortar la distancia a la máquina expendedora.</textarea>
+                </div>
+            </div>
+
+            <div class="experience-form-block" id="form_exp2">
+                <div class="section-title">Experiencia laboral 2</div>
+                <div class="form-group">
+                    <label>Cargo / Puesto</label>
+                    <input type="text" id="in_exp2_title" value="Astronauta de la NASA" onkeyup="updateCV()">
+                </div>
+                <div class="form-group">
+                    <label>Empresa y Fechas</label>
+                    <input type="text" id="in_exp2_meta" value="Agencia Espacial de los Estados Unidos (NASA) | Feb 1994 - Mar 1994" onkeyup="updateCV()">
+                </div>
+                <div class="form-group">
+                    <label>Tareas y Logros (Separar por renglones)</label>
+                    <textarea id="in_exp2_tasks" onkeyup="updateCV()">Viaje al espacio exterior en la misión del transbordador espacial Corvée para experimentos de ingravidez.
+Establecimiento de contacto diplomático (y accidental) con colonia de hormigas espaciales gigantes.
+Miembro clave en el rescate de la tripulación gracias al heroico sacrificio de una barra de carbón inanimada.</textarea>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-add" onclick="addExperience()">+ Agregar más experiencia laboral</button>
+
+        <div class="section-title">Formación académica</div>
+        <div class="form-group">
+            <label for="in_edu">Título / Institución / Año (Separar por doble salto)</label>
+            <textarea id="in_edu" onkeyup="updateCV()">Doctorado en Física Nuclear y Seguridad
+Universidad de Harvard
+1980 - 1984
+
+Licenciatura en Consumo de Cerveza Duff
+Universidad de Springfield
+1974 - 1978</textarea>
+        </div>
+
+        <div class="section-title">Conocimientos técnicos</div>
+        <div class="form-group">
+            <label for="in_skills">Herramientas y habilidades (Separar por renglones)</label>
+            <textarea id="in_skills" onkeyup="updateCV()">Operación de Consola T-437 (Nivel Experto)
+Dormir con los ojos abiertos (Técnica con gafas postizas)
+Manejo de quitanieves (Mr. Plow / Don Barredora)
+Canto coral y composición musical (The Be Sharps)</textarea>
+        </div>
+
+        <div class="section-title">Idiomas</div>
+        <div class="form-group">
+            <label for="in_lang">Idiomas y Nivel (Separar por renglones)</label>
+            <textarea id="in_lang" onkeyup="updateCV()">Inglés - Nivel Nativo
+Español - Nivel Neutro (Doblaje Latino)
+Idioma Delfín - Nivel Básico (Solo chasquidos)</textarea>
+        </div>
+    </div>
+
+    <div class="preview-section">
+        <button class="btn-download" onclick="generatePDF()"><i class="fas fa-file-pdf"></i> Descargar CV en PDF</button>
+        <div id="status-message"></div>
+        
+        <div class="cv-document" id="cv-document">
+            <div class="cv-left">
+                <div class="cv-photo-container" id="out_photo_container" onclick="reeditPhoto()" title="Haz clic para volver a editar">
+                    <img id="out_photo" src="https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png" crossorigin="anonymous" alt="Foto de perfil">
+                </div>
+
+                <div class="cv-left-content">
+                    <div class="block-title">Contacto</div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone-alt"></i> <span id="out_phone"></span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i> <span id="out_email"></span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i> <span id="out_location"></span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-calendar-alt"></i> <span id="out_dob"></span>
+                    </div>
+
+                    <div class="block-title">Formación</div>
+                    <div id="out_edu"></div>
+
+                    <div class="block-title">Habilidades</div>
+                    <div class="sidebar-block-list" id="out_skills"></div>
+
+                    <div class="block-title">Idiomas</div>
+                    <div class="sidebar-block-list" id="out_lang"></div>
+                </div>
+            </div>
+
+            <div class="cv-right">
+                <div class="cv-name" id="out_name"></div>
+                <div class="cv-title" id="out_title"></div>
+                <div class="cv-profile" id="out_profile"></div>
+
+                <div class="cv-section-title">Experiencia Laboral</div>
+                
+                <div id="out-experiences-list">
+                    <div class="cv-experience" id="out_exp1_container">
+                        <div class="cv-job-title" id="out_exp1_title"></div>
+                        <div class="cv-company-date" id="out_exp1_meta"></div>
+                        <ul class="cv-tasks" id="out_exp1_tasks"></ul>
+                    </div>
+
+                    <div class="cv-experience" id="out_exp2_container">
+                        <div class="cv-job-title" id="out_exp2_title"></div>
+                        <div class="cv-company-date" id="out_exp2_meta"></div>
+                        <ul class="cv-tasks" id="out_exp2_tasks"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let cropper;
+    let originalImageSrc = "https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png";
+    let expCount = 2; 
+
+    function updateColors() {
+        const sidebarColor = document.getElementById('picker_sidebar').value;
+        const accentColor = document.getElementById('picker_accent').value;
+
+        document.querySelector('.cv-left').style.backgroundColor = sidebarColor;
+        document.documentElement.style.setProperty('--accent', accentColor);
+    }
+
+    function loadPhoto(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                originalImageSrc = e.target.result;
+                openCropperModal(originalImageSrc);
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function reeditPhoto() {
+        if (originalImageSrc) {
+            openCropperModal(originalImageSrc);
+        }
+    }
+
+    function removePhoto() {
+        originalImageSrc = "";
+        document.getElementById('out_photo').src = "";
+        document.getElementById('out_photo_container').style.display = "none";
+        document.getElementById('in_photo').value = "";
+    }
+
+    function openCropperModal(imageSrc) {
+        const imageElement = document.getElementById('imageToCrop');
+        imageElement.crossOrigin = "anonymous";
+        imageElement.src = imageSrc;
+        document.getElementById('cropModal').style.display = 'flex';
+        
+        if (cropper) { cropper.destroy(); }
+        
+        cropper = new Cropper(imageElement, {
+            aspectRatio: 1, 
+            viewMode: 1, 
+            dragMode: 'move', 
+            autoCropArea: 1,
+            restore: false, guides: false, center: false, highlight: false,
+            cropBoxMovable: false, cropBoxResizable: false, toggleDragModeOnDblclick: false,
+        });
+    }
+
+    function applyCrop() {
+        if (!cropper) return;
+        const canvas = cropper.getCroppedCanvas({ width: 300, height: 300 });
+        document.getElementById('out_photo').src = canvas.toDataURL('image/jpeg', 0.9);
+        document.getElementById('out_photo_container').style.display = 'block';
+        closeModal();
+    }
+
+    function cancelCrop() { closeModal(); }
+    function closeModal() { document.getElementById('cropModal').style.display = 'none'; }
+
+    function calculateAge(dobString) {
+        const parts = dobString.trim().split('/');
+        if(parts.length === 3) {
+            const day = parseInt(parts[0], 10);
+            const month = parseInt(parts[1], 10) - 1; 
+            const year = parseInt(parts[2], 10);
+            
+            const dobDate = new Date(year, month, day);
+            const today = new Date();
+            
+            if(!isNaN(dobDate.getTime())) {
+                let age = today.getFullYear() - dobDate.getFullYear();
+                const m = today.getMonth() - dobDate.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < dobDate.getDate())) {
+                    age--;
+                }
+                return `${age} años (${dobString})`;
+            }
+        }
+        return dobString; 
+    }
+
+    function addExperience() {
+        expCount++;
+        const currentId = expCount;
+
+        const formHTML = `
+            <div class="experience-form-block" id="form_exp${currentId}">
+                <div class="section-title">
+                    Experiencia laboral ${currentId} 
+                    <button type="button" class="btn-remove" onclick="removeExperience(${currentId})"><i class="fas fa-trash"></i> Borrar</button>
+                </div>
+                <div class="form-group">
+                    <label>Cargo / Puesto</label>
+                    <input type="text" id="in_exp${currentId}_title" placeholder="Ej: Especialista de Soporte" onkeyup="updateCV()">
+                </div>
+                <div class="form-group">
+                    <label>Empresa y Fechas</label>
+                    <input type="text" id="in_exp${currentId}_meta" placeholder="Ej: Empresa S.A. | Mar 2018 - Dic 2020" onkeyup="updateCV()">
+                </div>
+                <div class="form-group">
+                    <label>Tareas y Logros (Separar por renglones)</label>
+                    <textarea id="in_exp${currentId}_tasks" onkeyup="updateCV()"></textarea>
+                </div>
+            </div>
+        `;
+        document.getElementById('experiences-form-container').insertAdjacentHTML('beforeend', formHTML);
+
+        const previewHTML = `
+            <div class="cv-experience" id="out_exp${currentId}_container" style="display: none;">
+                <div class="cv-job-title" id="out_exp${currentId}_title"></div>
+                <div class="cv-company-date" id="out_exp${currentId}_meta"></div>
+                <ul class="cv-tasks" id="out_exp${currentId}_tasks"></ul>
+            </div>
+        `;
+        document.getElementById('out-experiences-list').insertAdjacentHTML('beforeend', previewHTML);
+    }
+
+    function removeExperience(id) {
+        const formBlock = document.getElementById(`form_exp${id}`);
+        const previewBlock = document.getElementById(`out_exp${id}_container`);
+        if (formBlock) formBlock.remove();
+        if (previewBlock) previewBlock.remove();
+        updateCV(); 
+    }
+
+    function updateCV() {
+        document.getElementById('out_name').innerText = document.getElementById('in_name').value;
+        document.getElementById('out_title').innerText = document.getElementById('in_title').value;
+        document.getElementById('out_phone').innerText = document.getElementById('in_phone').value;
+        document.getElementById('out_email').innerText = document.getElementById('in_email').value;
+        document.getElementById('out_location').innerText = document.getElementById('in_location').value;
+        
+        const dobInput = document.getElementById('in_dob').value;
+        document.getElementById('out_dob').innerText = calculateAge(dobInput);
+        document.getElementById('out_profile').innerText = document.getElementById('in_profile').value;
+
+        for(let i = 1; i <= expCount; i++) {
+            const titleInput = document.getElementById(`in_exp${i}_title`);
+            if (titleInput) { 
+                document.getElementById(`out_exp${i}_title`).innerText = titleInput.value;
+                document.getElementById(`out_exp${i}_meta`).innerText = document.getElementById(`in_exp${i}_meta`).value;
+                formatList(`in_exp${i}_tasks`, `out_exp${i}_tasks`, true);
+                
+                document.getElementById(`out_exp${i}_container`).style.display = titleInput.value.trim() !== '' ? 'block' : 'none';
+            }
+        }
+
+        formatBlocks('in_edu', 'out_edu');
+        formatSidebarList('in_skills', 'out_skills');
+        formatSidebarList('in_lang', 'out_lang');
+    }
+
+    function formatList(inputId, outputId, isBullet = false) {
+        const lines = document.getElementById(inputId).value.split('\n').filter(line => line.trim() !== '');
+        const output = document.getElementById(outputId);
+        output.innerHTML = '';
+        lines.forEach(line => {
+            const el = document.createElement(isBullet ? 'li' : 'div');
+            el.innerText = line;
+            output.appendChild(el);
+        });
+    }
+
+    function formatSidebarList(inputId, outputId) {
+        const lines = document.getElementById(inputId).value.split('\n').filter(line => line.trim() !== '');
+        const output = document.getElementById(outputId);
+        output.innerHTML = '';
+        lines.forEach(line => {
+            const div = document.createElement('div');
+            div.innerText = "• " + line;
+            output.appendChild(div);
+        });
+    }
+
+    function formatBlocks(inputId, outputId) {
+        const text = document.getElementById(inputId).value;
+        const output = document.getElementById(outputId);
+        output.innerHTML = '';
+        const blocks = text.split('\n\n').filter(b => b.trim() !== '');
+        blocks.forEach(block => {
+            const div = document.createElement('div');
+            div.className = 'list-item';
+            const lines = block.split('\n').filter(l => l.trim() !== '');
+            if(lines.length > 0) {
+                const title = document.createElement('div');
+                title.className = 'list-item-title';
+                title.innerText = lines[0];
+                div.appendChild(title);
+                for(let i=1; i<lines.length; i++) {
+                    const desc = document.createElement('div');
+                    desc.className = 'list-item-desc';
+                    desc.innerText = lines[i];
+                    div.appendChild(desc);
+                }
+            }
+            output.appendChild(div);
+        });
+    }
+
+    function generatePDF() {
+        const statusEl = document.getElementById('status-message');
+        statusEl.style.color = "#0066cc";
+        statusEl.innerText = "Generando PDF, por favor espere...";
+
+        const rawName = document.getElementById('in_name').value.trim() || "CV_Profesional";
+        const cleanFilename = "CV_" + rawName.replace(/[^a-zA-Z0-9]/g, "_") + ".pdf";
+
+        const element = document.getElementById('cv-document');
+
+        const mmToPx = element.offsetWidth / 210; 
+        const pageHeightPx = 297 * mmToPx;
+        const naturalHeightPx = element.scrollHeight;
+        const totalPages = Math.max(1, Math.ceil(naturalHeightPx / pageHeightPx));
+        const roundedHeightPx = totalPages * pageHeightPx;
+
+        const originalHeight = element.style.height;
+        const originalMinHeight = element.style.minHeight;
+        element.style.height = roundedHeightPx + "px";
+        element.style.minHeight = roundedHeightPx + "px";
+
+        function restoreHeight() {
+            element.style.height = originalHeight;
+            element.style.minHeight = originalMinHeight;
+        }
+
+        const opt = {
+            margin:       0,
+            filename:     cleanFilename,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true, allowTaint: false },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak:    { mode: ['css', 'legacy'], avoid: ['.cv-experience', '.list-item'] }
+        };
+
+        html2pdf().set(opt).from(element).save().then(() => {
+            restoreHeight();
+            statusEl.style.color = "#27ae60";
+            statusEl.innerText = "¡PDF descargado con éxito!";
+            setTimeout(() => { statusEl.innerText = ""; }, 4000);
+        }).catch(err => {
+            restoreHeight();
+            console.error("Error al generar PDF:", err);
+            statusEl.style.color = "#e74c3c";
+            statusEl.innerText = "Hubo un error al exportar el PDF. Revisa la consola.";
+        });
+    }
+
+    window.onload = function() {
+        updateCV();
+    };
+</script>
+
+</body>
+</html>
